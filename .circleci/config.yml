@@ -1,0 +1,28 @@
+
+version: 2.1
+
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-deps-{{ checksum "requirements.txt" }}
+            - v1-deps-
+      - run:
+          name: Встановити залежності
+          command: pip install -r requirements.txt
+      - save_cache:
+          key: v1-deps-{{ checksum "requirements.txt" }}
+          paths:
+            - ~/.cache/pip
+      - run:
+          name: Тести
+          command: pytest
+
+workflows:
+  main:
+    jobs:
+      - build-and-test
